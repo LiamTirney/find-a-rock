@@ -2,29 +2,34 @@
 <div class="row">
     <h1 class="text-center">Edit Gym</h1>
     <div class="col-6 offset-3">
-        <form action="/gyms/<%= gym._id %>?_method=PUT" method="POST">
+        <form action="/gyms/<%= gym._id %>?_method=PUT" method="POST" novalidate class="validated-form">
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
-                <input class="form-control" type="text" id="title" name="gym[title]" value="<%= gym.title %>">
+                <input class="form-control" type="text" id="title" name="gym[title]" value="<%= gym.title %>" required>
+                <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="location">Location</label>
-                <input class="form-control" type="text" id="location" name="gym[location]" value="<%= gym.location %>">
+                <input class="form-control" type="text" id="location" name="gym[location]" value="<%= gym.location %>" required>
+                <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="image">Image Url</label>
-                <input class="form-control" type="text" id="image" name="gym[image]" value="<%= gym.image %>">
+                <input class="form-control" type="text" id="image" name="gym[image]" value="<%= gym.image %>" required>
+                <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="price">Gym Price</label>
                 <div class="input-group">
                     <span class="input-group-text" id="price-label">$</span>
-                    <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price" aria-describedby="price-label" name="gym[price]" value="<%= gym.price %>">
+                    <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price" aria-describedby="price-label" name="gym[price]" value="<%= gym.price %>" required>
+                    <div class="valid-feedback">Looks good!</div>
                 </div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="description">Description</label>
-                <textarea class="form-control" type="text" id="description" name="gym[description]"><%= gym.description %></textarea>
+                <textarea class="form-control" type="text" id="description" name="gym[description]" required><%= gym.description %></textarea>
+                <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="mb-3">
                 <button class="btn btn-info">Update Gym</button>
