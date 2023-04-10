@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
+const catchAsync = require('./utils/catchAsync');
 const methodOverride = require('method-override');
 const Gym = require('./models/gym');
 
@@ -26,46 +27,42 @@ app.get('/', (req, res) => {
     res.render('home')
 })
 
-app.get('/gyms', async (req, res) => {
+app.get('/gyms', catchAsync(async (req, res) => {
     const gyms = await Gym.find({});
     res.render('gyms/index', { gyms })
-})
+}))
 
 app.get('/gyms/new', (req, res) => {
     res.render('gyms/new')
 })
 
-app.post('/gyms', async (req, res, next) => {
-    try {
-        const gym = new Gym(req.body.gym);
-        await gym.save();
-        res.redirect(`/gyms/${gym._id}`)
-    } catch (e) {
-        next(e)
-    }
-})
+app.post('/gyms', catchAsync(async (req, res, next) => {
+    const gym = new Gym(req.body.gym);
+    await gym.save();
+    res.redirect(`/gyms/${gym._id}`)
+}))
 
-app.get('/gyms/:id', async (req, res) => {
+app.get('/gyms/:id', catchAsync(async (req, res) => {
     const gym = await Gym.findById(req.params.id);
     res.render('gyms/show', { gym });
-})
+}))
 
-app.get('/gyms/:id/edit', async (req, res) => {
+app.get('/gyms/:id/edit', catchAsync(async (req, res) => {
     const gym = await Gym.findById(req.params.id);
     res.render('gyms/edit', { gym })
-})
+}))
 
-app.put('/gyms/:id', async (req, res) => {
+app.put('/gyms/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     const gym = await Gym.findByIdAndUpdate(id, { ...req.body.gym });
     res.redirect(`/gyms/${gym._id}`);
-})
+}))
 
-app.delete('/gyms/:id', async (req, res) => {
+app.delete('/gyms/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     await Gym.findByIdAndDelete(id);
     res.redirect('/gyms');
-})
+}))
 
 app.use((err, req, res, next) => {
     res.send('Oh Boy, something went wrong!')
