@@ -35,10 +35,14 @@ app.get('/gyms/new', (req, res) => {
     res.render('gyms/new')
 })
 
-app.post('/gyms', async (req, res) => {
-    const gym = new Gym(req.body.gym);
-    await gym.save();
-    res.redirect(`/gyms/${gym._id}`)
+app.post('/gyms', async (req, res, next) => {
+    try {
+        const gym = new Gym(req.body.gym);
+        await gym.save();
+        res.redirect(`/gyms/${gym._id}`)
+    } catch (e) {
+        next(e)
+    }
 })
 
 app.get('/gyms/:id', async (req, res) => {
@@ -63,12 +67,9 @@ app.delete('/gyms/:id', async (req, res) => {
     res.redirect('/gyms');
 })
 
-
-// app.get('/makegym', async (req, res) => {
-//     const gym = new Gym({ title: 'My Backyard Rock Wall', description: 'Cheap climbing!' })
-//     await gym.save();
-//     res.send(gym)
-// })
+app.use((err, req, res, next) => {
+    res.send('Oh Boy, something went wrong!')
+})
 
 app.listen(3000, () => {
     console.log('Serving on port 3000')
