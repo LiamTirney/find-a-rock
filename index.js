@@ -38,7 +38,7 @@ app.get('/gyms/new', (req, res) => {
 })
 
 app.post('/gyms', catchAsync(async (req, res, next) => {
-    if (!req.body.campground) throw new ExpressError('Invalid Gym Data')
+    if (!req.body.campground) throw new ExpressError('Invalid Gym Data', 400);
     const gym = new Gym(req.body.gym);
     await gym.save();
     res.redirect(`/gyms/${gym._id}`)
@@ -71,8 +71,9 @@ app.all('*', (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    const { statusCode = 500, message = 'Something went wrong' } = err;
-    res.status(statusCode).send(message);
+    const { statusCode = 500 } = err;
+    if(!err.message) err.message = 'Oh no, something went wrong!'
+    res.status(statusCode).render('error', { err });
 })
 
 app.listen(3000, () => {
