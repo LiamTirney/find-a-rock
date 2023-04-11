@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
+const Joi = require('joi');
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
@@ -38,7 +39,22 @@ app.get('/gyms/new', (req, res) => {
 })
 
 app.post('/gyms', catchAsync(async (req, res, next) => {
-    if (!req.body.campground) throw new ExpressError('Invalid Gym Data', 400);
+    // if (!req.body.gym) throw new ExpressError('Invalid Gym Data', 400);
+    const gymSchema = Joi.object({
+        gym: Joi.object({
+            title: Joi.string().required(),
+            price: Joi.number().required().min(0),
+            image: Joi.string().required(),
+            location: Joi.string().required(),
+            description: Joi.string().required()
+        }).required()
+    })
+    const { error } = gymSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    }
+    console.log(result);
     const gym = new Gym(req.body.gym);
     await gym.save();
     res.redirect(`/gyms/${gym._id}`)
