@@ -67,7 +67,7 @@ app.post('/gyms', validateGym, catchAsync(async (req, res, next) => {
 }))
 
 app.get('/gyms/:id', catchAsync(async (req, res) => {
-    const gym = await Gym.findById(req.params.id);
+    const gym = await Gym.findById(req.params.id).populate('reviews');
     res.render('gyms/show', { gym });
 }))
 
