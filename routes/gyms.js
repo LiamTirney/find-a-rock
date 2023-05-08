@@ -28,6 +28,7 @@ router.post('/', validateGym, catchAsync(async (req, res, next) => {
     // if (!req.body.gym) throw new ExpressError('Invalid Gym Data', 400);
     const gym = new Gym(req.body.gym);
     await gym.save();
+    req.flash('success', 'Successfully made a new campground!');
     res.redirect(`/gyms/${gym._id}`)
 }))
 
