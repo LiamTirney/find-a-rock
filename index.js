@@ -9,6 +9,8 @@ const methodOverride = require('method-override');
 const Gym = require('./models/gym');
 const Review = require('./models/review');
 
+const gyms = require('./routes/gyms');
+
 mongoose.connect('mongodb://127.0.0.1:27017/find-a-rock');
 
 const db = mongoose.connection;
@@ -26,15 +28,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'));
 
-const validateGym = (req, res, next) => {
-    const { error } = gymSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
+
 
 const validateReview = (req, res, next) => {
     const { error } = reviewSchema.validate(req.body);
@@ -46,47 +40,11 @@ const validateReview = (req, res, next) => {
     }
 }
 
+app.use('/gyms', gyms)
+
 app.get('/', (req, res) => {
     res.render('home')
 })
-
-app.get('/gyms', catchAsync(async (req, res) => {
-    const gyms = await Gym.find({});
-    res.render('gyms/index', { gyms })
-}))
-
-app.get('/gyms/new', (req, res) => {
-    res.render('gyms/new')
-})
-
-app.post('/gyms', validateGym, catchAsync(async (req, res, next) => {
-    // if (!req.body.gym) throw new ExpressError('Invalid Gym Data', 400);
-    const gym = new Gym(req.body.gym);
-    await gym.save();
-    res.redirect(`/gyms/${gym._id}`)
-}))
-
-app.get('/gyms/:id', catchAsync(async (req, res) => {
-    const gym = await Gym.findById(req.params.id).populate('reviews');
-    res.render('gyms/show', { gym });
-}))
-
-app.get('/gyms/:id/edit', catchAsync(async (req, res) => {
-    const gym = await Gym.findById(req.params.id);
-    res.render('gyms/edit', { gym })
-}))
-
-app.put('/gyms/:id', validateGym, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const gym = await Gym.findByIdAndUpdate(id, { ...req.body.gym });
-    res.redirect(`/gyms/${gym._id}`);
-}))
-
-app.delete('/gyms/:id', catchAsync(async (req, res) => {
-    const { id } = req.params;
-    await Gym.findByIdAndDelete(id);
-    res.redirect('/gyms');
-}))
 
 app.post('/gyms/:id/reviews', validateReview, catchAsync(async (req, res) => {
     const gym = await Gym.findById(req.params.id);
