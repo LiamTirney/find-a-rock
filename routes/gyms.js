@@ -34,11 +34,19 @@ router.post('/', validateGym, catchAsync(async (req, res, next) => {
 
 router.get('/:id', catchAsync(async (req, res) => {
     const gym = await Gym.findById(req.params.id).populate('reviews');
+    if (!gym) {
+        req.flash('error', 'Cannot find that campground!');
+        return res.redirect('/gyms');
+    }
     res.render('gyms/show', { gym });
 }))
 
 router.get('/:id/edit', catchAsync(async (req, res) => {
     const gym = await Gym.findById(req.params.id);
+    if (!gym) {
+        req.flash('error', 'Cannot find that campground!');
+        return res.redirect('/gyms');
+    }
     res.render('gyms/edit', { gym })
 }))
 
