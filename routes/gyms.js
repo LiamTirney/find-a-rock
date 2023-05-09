@@ -28,7 +28,7 @@ router.post('/', validateGym, catchAsync(async (req, res, next) => {
     // if (!req.body.gym) throw new ExpressError('Invalid Gym Data', 400);
     const gym = new Gym(req.body.gym);
     await gym.save();
-    req.flash('success', 'Successfully made a new campground!');
+    req.flash('success', 'Successfully made a new gym!');
     res.redirect(`/gyms/${gym._id}`)
 }))
 
@@ -45,6 +45,7 @@ router.get('/:id/edit', catchAsync(async (req, res) => {
 router.put('/:id', validateGym, catchAsync(async (req, res) => {
     const { id } = req.params;
     const gym = await Gym.findByIdAndUpdate(id, { ...req.body.gym });
+    req.flash('success', 'Successfully updated gym!');
     res.redirect(`/gyms/${gym._id}`);
 }))
 
