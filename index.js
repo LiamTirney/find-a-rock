@@ -10,8 +10,9 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 
-const gyms = require('./routes/gyms');
-const reviews = require('./routes/reviews');
+const userRoutes = require('./routes/users');
+const gymRoutes = require('./routes/gyms');
+const reviewRoutes = require('./routes/reviews');
 
 mongoose.connect('mongodb://127.0.0.1:27017/find-a-rock');
 
@@ -57,8 +58,9 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use('/gyms', gyms)
-app.use('/gyms/:id/reviews', reviews)
+app.use('/', userRoutes)
+app.use('/gyms', gymRoutes)
+app.use('/gyms/:id/reviews', reviewRoutes)
 
 app.get('/', (req, res) => {
     res.render('home')
