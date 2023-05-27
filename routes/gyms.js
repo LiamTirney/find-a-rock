@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
 const { gymSchema } = require('../schemas.js');
+const { isLoggedIn } = require('../middleware');
+
 const ExpressError = require('../utils/ExpressError');
 const Gym = require('../models/gym');
 
@@ -20,11 +22,11 @@ router.get('/', catchAsync(async (req, res) => {
     res.render('gyms/index', { gyms })
 }))
 
-router.get('/new', (req, res) => {
-    res.render('gyms/new')
+router.get('/new', isLoggedIn, (req, res) => {
+    res.render('gyms/new');
 })
 
-router.post('/', validateGym, catchAsync(async (req, res, next) => {
+router.post('/', isLoggedIn, validateGym, catchAsync(async (req, res, next) => {
     // if (!req.body.gym) throw new ExpressError('Invalid Gym Data', 400);
     const gym = new Gym(req.body.gym);
     await gym.save();
@@ -41,7 +43,7 @@ router.get('/:id', catchAsync(async (req, res) => {
     res.render('gyms/show', { gym });
 }))
 
-router.get('/:id/edit', catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
     const gym = await Gym.findById(req.params.id);
     if (!gym) {
         req.flash('error', 'Cannot find that campground!');
@@ -50,14 +52,14 @@ router.get('/:id/edit', catchAsync(async (req, res) => {
     res.render('gyms/edit', { gym })
 }))
 
-router.put('/:id', validateGym, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, validateGym, catchAsync(async (req, res) => {
     const { id } = req.params;
     const gym = await Gym.findByIdAndUpdate(id, { ...req.body.gym });
     req.flash('success', 'Successfully updated gym!');
     res.redirect(`/gyms/${gym._id}`);
 }))
 
-router.delete('/:id', catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     await Gym.findByIdAndDelete(id);
     res.redirect('/gyms');
