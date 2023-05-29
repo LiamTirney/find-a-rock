@@ -9,8 +9,9 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item text-muted"><%= gym.location %></li>
+                <li class="list-group-item">Submitted by <%= gym.author.username %></li>
                 <li class="list-group-item">$<%= gym.price %>/day</li>
-                <li class="list-group-item">A third item</li>
+                <!-- <li class="list-group-item">A third item</li> -->
             </ul>
             <div class="card-body">
                 <a class="card-link btn btn-info" href="/gyms/<%= gym._id %>/edit">Edit</a>

@@ -29,13 +29,15 @@ router.get('/new', isLoggedIn, (req, res) => {
 router.post('/', isLoggedIn, validateGym, catchAsync(async (req, res, next) => {
     // if (!req.body.gym) throw new ExpressError('Invalid Gym Data', 400);
     const gym = new Gym(req.body.gym);
+    gym.author = req.user._id
     await gym.save();
     req.flash('success', 'Successfully made a new gym!');
     res.redirect(`/gyms/${gym._id}`)
 }))
 
 router.get('/:id', catchAsync(async (req, res) => {
-    const gym = await Gym.findById(req.params.id).populate('reviews');
+    const gym = await Gym.findById(req.params.id).populate('reviews').populate('author');
+    // console.log(gym);
     if (!gym) {
         req.flash('error', 'Cannot find that campground!');
         return res.redirect('/gyms');
