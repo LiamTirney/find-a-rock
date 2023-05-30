@@ -13,12 +13,14 @@
                 <li class="list-group-item">$<%= gym.price %>/day</li>
                 <!-- <li class="list-group-item">A third item</li> -->
             </ul>
+            <% if (currentUser && gym.author.equals(currentUser._id)) { %>
             <div class="card-body">
                 <a class="card-link btn btn-info" href="/gyms/<%= gym._id %>/edit">Edit</a>
                 <form class="d-inline" action="/gyms/<%= gym._id %>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">Delete</button>
                 </form>
             </div>
+            <% } %>
             <div class="card-footer text-body-secondary">
                 2 days ago
             </div>
