@@ -1,31 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
-const { gymSchema } = require('../schemas.js');
-const { isLoggedIn } = require('../middleware');
+const { isLoggedIn, validateGym, isAuthor } = require('../middleware');
 
-const ExpressError = require('../utils/ExpressError');
 const Gym = require('../models/gym');
-
-const validateGym = (req, res, next) => {
-    const { error } = gymSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
-
-const isAuthor = async (req, res, next) => {
-    const { id } = req.params;
-    const gym = await Gym.findById(id);
-    if (!gym.author.equals(req.user._id)) {
-        req.flash('error', 'You do not have permission to do that!');
-        return res.redirect(`/gyms/${id}`);
-    }
-    next();
-}
 
 router.get('/', catchAsync(async (req, res) => {
     const gyms = await Gym.find({});
