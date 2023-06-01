@@ -1,64 +1,23 @@
 const express = require('express');
 const router = express.Router();
+const gyms = require('../controllers/gyms');
 const catchAsync = require('../utils/catchAsync');
 const { isLoggedIn, validateGym, isAuthor } = require('../middleware');
 
 const Gym = require('../models/gym');
 
-router.get('/', catchAsync(async (req, res) => {
-    const gyms = await Gym.find({});
-    res.render('gyms/index', { gyms })
-}))
+router.get('/', catchAsync(gyms.index));
 
-router.get('/new', isLoggedIn, (req, res) => {
-    res.render('gyms/new');
-})
+router.get('/new', isLoggedIn, gyms.renderNewForm);
 
-router.post('/', isLoggedIn, validateGym, catchAsync(async (req, res, next) => {
-    // if (!req.body.gym) throw new ExpressError('Invalid Gym Data', 400);
-    const gym = new Gym(req.body.gym);
-    gym.author = req.user._id
-    await gym.save();
-    req.flash('success', 'Successfully made a new gym!');
-    res.redirect(`/gyms/${gym._id}`)
-}))
+router.post('/', isLoggedIn, validateGym, catchAsync(gyms.createGym));
 
-router.get('/:id', catchAsync(async (req, res) => {
-    const gym = await Gym.findById(req.params.id).populate({
-        path: 'reviews',
-        populate: {
-            path: 'author'
-        }
-    }).populate('author');
-    console.log(gym);
-    if (!gym) {
-        req.flash('error', 'Cannot find that campground!');
-        return res.redirect('/gyms');
-    }
-    res.render('gyms/show', { gym });
-}))
+router.get('/:id', catchAsync(gyms.showGym));
 
-router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const gym = await Gym.findById(id);
-    if (!gym) {
-        req.flash('error', 'Cannot find that campground!');
-        return res.redirect('/gyms');
-    }
-    res.render('gyms/edit', { gym })
-}))
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(gyms.renderEditForm));
 
-router.put('/:id', isLoggedIn, isAuthor, validateGym, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const gym = await Gym.findByIdAndUpdate(id, { ...req.body.gym });
-    req.flash('success', 'Successfully updated gym!');
-    res.redirect(`/gyms/${gym._id}`);
-}))
+router.put('/:id', isLoggedIn, isAuthor, validateGym, catchAsync(gyms.updateGym));
 
-router.delete('/:id', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    await Gym.findByIdAndDelete(id);
-    res.redirect('/gyms');
-}))
+router.delete('/:id', isLoggedIn, isAuthor, catchAsync(gyms.deleteGym));
 
 module.exports = router;
