@@ -3,12 +3,18 @@ const router = express.Router();
 const gyms = require('../controllers/gyms');
 const catchAsync = require('../utils/catchAsync');
 const { isLoggedIn, validateGym, isAuthor } = require('../middleware');
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
 
 const Gym = require('../models/gym');
 
 router.route('/')
     .get(catchAsync(gyms.index))
-    .post(isLoggedIn, validateGym, catchAsync(gyms.createGym))
+    // .post(isLoggedIn, validateGym, catchAsync(gyms.createGym))
+    .post(upload.array('image'), (req, res) => {
+        console.log(req.body, req.files);
+        res.send('IT WORKED?!');
+    })
 
 router.get('/new', isLoggedIn, gyms.renderNewForm);
 
