@@ -11,11 +11,7 @@ const Gym = require('../models/gym');
 
 router.route('/')
     .get(catchAsync(gyms.index))
-    // .post(isLoggedIn, validateGym, catchAsync(gyms.createGym))
-    .post(upload.array('image'), (req, res) => {
-        console.log(req.body, req.files);
-        res.send('IT WORKED?!');
-    })
+    .post(isLoggedIn, upload.array('image'), validateGym, catchAsync(gyms.createGym))
 
 router.get('/new', isLoggedIn, gyms.renderNewForm);
 
